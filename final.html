@@ -1,0 +1,389 @@
+<!doctype html><html><head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1133031432141007"
+     crossorigin="anonymous"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Checkout Planner</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: inputs on the left, big check-out readout on the right; stacks on phones.
+   Palette: ink, paper, amber (check-out), teal (work), plum (break). */
+:root {
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --surface-2: #e6eaee;
+  --fg: #172033;
+  --muted: #5b6678;
+  --line: #d3d9e0;
+  --accent: #b45309;
+  --accent-soft: #fdecd3;
+  --work: #0f766e;
+  --break: #9a4d6b;
+  --danger: #b42318;
+  --font-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-num: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e141f;
+    --surface: #161e2c;
+    --surface-2: #1f2937;
+    --fg: #e8ecf2;
+    --muted: #9aa5b8;
+    --line: #2b3648;
+    --accent: #f5a748;
+    --accent-soft: #3a2a14;
+    --work: #3cc2b4;
+    --break: #e08bb0;
+    --danger: #ff8a7a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e141f;
+  --surface: #161e2c;
+  --surface-2: #1f2937;
+  --fg: #e8ecf2;
+  --muted: #9aa5b8;
+  --line: #2b3648;
+  --accent: #f5a748;
+  --accent-soft: #3a2a14;
+  --work: #3cc2b4;
+  --break: #e08bb0;
+  --danger: #ff8a7a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-block: 32px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 920px; margin: 0 auto; display: grid; gap: 24px; }
+header h1 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+header p { margin: 4px 0 0; color: var(--muted); max-width: 62ch; }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 760px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 20px; min-width: 0; }
+.panel h2 { margin: 0; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+
+.field { display: grid; gap: 6px; min-width: 0; }
+.field > label, .field > .lbl { font-size: 0.875rem; font-weight: 600; }
+.hint { font-size: 0.8125rem; color: var(--muted); }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+input[type="time"], input[type="number"], input[type="text"], select {
+  font: inherit; font-family: var(--font-num); font-weight: 500; font-size: 1.0625rem;
+  color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+  padding: 9px 12px; min-width: 0; width: 100%;
+}
+input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num-unit { display: flex; align-items: center; gap: 6px; flex: 1 1 90px; min-width: 0; }
+.num-unit span { color: var(--muted); font-size: 0.875rem; }
+.hm { display: inline-flex; align-items: center; width: max-content; max-width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; }
+.hm:focus-within { border-color: var(--accent); }
+.hm input { width: 3ch; padding: 9px 4px; border: 0; border-radius: 6px; background: transparent; text-align: center; caret-color: var(--accent); }
+.hm input:focus { background: var(--accent-soft); outline: none; }
+.hm .colon { font-family: var(--font-num); font-weight: 700; font-size: 1.0625rem; color: var(--muted); }
+
+button { font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); padding: 8px 12px; font-weight: 500; }
+button:hover { background: var(--surface-2); }
+.btn-ghost { font-size: 0.875rem; padding: 8px 12px; }
+
+/* Result */
+.result { gap: 18px; }
+.out-label { font-size: 0.8125rem; font-weight: 600; color: var(--muted); }
+.out-time {
+  font-family: var(--font-num); font-weight: 700; color: var(--accent);
+  font-size: clamp(2.75rem, 11vw, 4.25rem); line-height: 1.05; letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.out-time small { font-size: 0.3em; margin-left: 6px; letter-spacing: 0; }
+.nextday { display: inline-block; margin-top: 6px; font-size: 0.8125rem; font-weight: 600; background: var(--accent-soft); color: var(--accent); padding: 3px 10px; border-radius: 999px; }
+.nextday[hidden] { display: none; }
+.mark { text-align: center; color: var(--muted); font-size: 0.8125rem; letter-spacing: 0.04em; opacity: 0.85; padding-top: 8px; }
+.formula { font-family: var(--font-num); font-size: 0.875rem; color: var(--muted); overflow-wrap: anywhere; }
+
+.bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface-2); }
+.bar .w { background: var(--work); }
+.bar .b { background: var(--break); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.875rem; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; }
+
+dl { margin: 0; display: grid; gap: 0; }
+dl > div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: var(--font-num); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+
+.actual { border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 10px; }
+.verdict { font-size: 0.9375rem; font-weight: 600; }
+.verdict.ok { color: var(--work); }
+.verdict.short { color: var(--danger); }
+.error { color: var(--danger); font-size: 0.875rem; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Checkout Planner</h1>
+    <p>Enter your check-in time and break time. The planner adds your required work hours and your break to give you the earliest check-out.</p>
+  </header>
+
+  <div class="grid">
+    <section class="panel" aria-label="Inputs">
+      <h2>Your day</h2>
+
+      <div class="field">
+        <label for="checkin">Check-in time</label>
+        <div class="row">
+          <input type="time" id="checkin" value="09:00" style="flex:1 1 140px">
+          <button type="button" class="btn-ghost" id="nowBtn">Use current time</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="lbl" id="shiftLbl">Required work time</span>
+        <div class="row" role="group" aria-labelledby="shiftLbl">
+          <div class="num-unit"><input type="number" id="shiftH" min="0" max="24" step="1" value="9" aria-label="Work hours"><span>hrs</span></div>
+          <div class="num-unit"><input type="number" id="shiftM" min="0" max="59" step="5" value="0" aria-label="Work minutes"><span>min</span></div>
+        </div>
+        <span class="hint">Break time is added on top of this.</span>
+      </div>
+
+      <div class="field">
+        <span class="lbl" id="brkLbl">Break time</span>
+        <div class="hm" role="group" aria-labelledby="brkLbl" aria-describedby="breakHint">
+          <input type="text" id="breakH" value="00" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="Break hours">
+          <span class="colon" aria-hidden="true">:</span>
+          <input type="text" id="breakM" value="30" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="Break minutes">
+        </div>
+        <span class="hint" id="breakHint">Edit hours first, then minutes.</span>
+      </div>
+    </section>
+
+    <section class="panel result" aria-label="Result" aria-live="polite">
+      <h2>Check-out</h2>
+      <div>
+        <div class="out-label">You can check out at</div>
+        <div class="out-time" id="outTime">6:30<small>PM</small></div>
+        <span class="nextday" id="nextDay" hidden>Next day</span>
+      </div>
+      <div class="formula" id="formula"></div>
+
+      <div>
+        <div class="bar" id="bar" role="img" aria-label="Work time compared with break time"></div>
+        <div class="legend" style="margin-top:10px">
+          <span><i style="background:var(--work)"></i>Work <b id="lgWork"></b></span>
+          <span><i style="background:var(--break)"></i>Break <b id="lgBreak"></b></span>
+        </div>
+      </div>
+
+      <dl>
+        <div><dt>Check-in</dt><dd id="sIn"></dd></div>
+        <div><dt>Work time</dt><dd id="sWork"></dd></div>
+        <div><dt>Break</dt><dd id="sBreak"></dd></div>
+        <div><dt>Total time at office</dt><dd id="sTotal"></dd></div>
+      </dl>
+
+      <div class="actual">
+        <div class="field">
+          <label for="actualOut">Actual check-out (optional)</label>
+          <input type="time" id="actualOut">
+          <span class="hint">Enter the time you left to see how your work time compares.</span>
+        </div>
+        <div class="verdict" id="verdict"></div>
+      </div>
+      <div class="error" id="err" hidden></div>
+    </section>
+  </div>
+  <footer class="mark">Made by Kaushik</footer>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var DAY = 1440;
+  var STORE = "checkout-planner-v3";
+
+  function num(v) { var n = parseInt(v, 10); return isNaN(n) || n < 0 ? 0 : n; }
+  function toMin(t) { if (!t) return null; var p = t.split(":"); return (+p[0]) * 60 + (+p[1]); }
+  function fmtClock(total) {
+    var m = ((total % DAY) + DAY) % DAY;
+    var h = Math.floor(m / 60), mm = m % 60;
+    var ap = h >= 12 ? "PM" : "AM";
+    var h12 = h % 12 === 0 ? 12 : h % 12;
+    return { text: h12 + ":" + String(mm).padStart(2, "0"), ap: ap };
+  }
+  /* Break entry: "34" means 34 minutes, "01:32" means 1 hour 32 minutes. Returns null when invalid. */
+  function parseBreak(s) {
+    s = (s || "").trim();
+    if (s === "") return 0;
+    var m = s.match(/^(\d{1,2}):(\d{1,2})$/);
+    if (m) { var mm = parseInt(m[2], 10); return parseInt(m[1], 10) * 60 + mm; }
+    if (/^\d{1,4}$/.test(s)) return parseInt(s, 10);
+    return null;
+  }
+  function fmtDur(mins) {
+    var h = Math.floor(mins / 60), m = mins % 60;
+    if (h && m) return h + "h " + m + "m";
+    if (h) return h + "h";
+    return m + "m";
+  }
+
+  function load() {
+    try {
+      var s = JSON.parse(localStorage.getItem(STORE) || "null");
+      if (!s) return;
+      if (typeof s.h === "number") $("shiftH").value = s.h;
+      if (typeof s.m === "number") $("shiftM").value = s.m;
+      var bt = typeof s.brk === "string" ? parseBreak(s.brk) : (typeof s.brk === "number" ? s.brk : null);
+      if (bt !== null) setBreak(bt);
+    } catch (e) {}
+  }
+  function save() {
+    try {
+      localStorage.setItem(STORE, JSON.stringify({
+        h: num($("shiftH").value), m: num($("shiftM").value),
+        brk: num($("breakH").value) * 60 + num($("breakM").value)
+      }));
+    } catch (e) {}
+  }
+
+  /* Core calculation: check-out = check-in + work time + break */
+  function compute(checkinMin, workMin, brkMin) {
+    var total = workMin + brkMin;
+    var out = checkinMin + total;
+    return { brk: brkMin, total: total, out: out, dayOffset: Math.floor(out / DAY) };
+  }
+
+  function update() {
+    var err = $("err");
+    var cin = toMin($("checkin").value);
+    var workMin = num($("shiftH").value) * 60 + num($("shiftM").value);
+    var brkParsed = num($("breakH").value) * 60 + num($("breakM").value);
+    var brk = brkParsed === null ? 0 : brkParsed;
+    var bhint = $("breakHint");
+    if (brkParsed === null) {
+      bhint.textContent = "Use minutes (34) or hours:minutes (01:32)."; bhint.style.color = "var(--danger)";
+    } else {
+      bhint.textContent = fmtDur(brk) + " break. Edit hours first, then minutes."; bhint.style.color = "";
+    }
+    save();
+
+    if (cin === null) {
+      err.hidden = false;
+      err.textContent = "Enter a check-in time to see your check-out.";
+      $("outTime").innerHTML = "--:--";
+      $("nextDay").hidden = true;
+      return;
+    }
+    if (brkParsed === null) {
+      err.hidden = false;
+      err.textContent = "Enter the break as minutes (34) or hours:minutes (01:32).";
+      $("outTime").innerHTML = "--:--";
+      $("nextDay").hidden = true;
+      return;
+    }
+    err.hidden = true;
+
+    var r = compute(cin, workMin, brk);
+    var c = fmtClock(r.out);
+    $("outTime").innerHTML = c.text + "<small>" + c.ap + "</small>";
+    $("nextDay").hidden = r.dayOffset < 1;
+    $("nextDay").textContent = r.dayOffset === 1 ? "Next day" : "In " + r.dayOffset + " days";
+
+    var ci = fmtClock(cin);
+    $("formula").textContent = ci.text + " " + ci.ap + " + " + fmtDur(workMin) + " work + " + fmtDur(r.brk) + " break";
+
+    $("sIn").textContent = ci.text + " " + ci.ap;
+    $("sWork").textContent = fmtDur(workMin);
+    $("sBreak").textContent = fmtDur(r.brk);
+    $("sTotal").textContent = fmtDur(r.total);
+    $("lgWork").textContent = fmtDur(workMin);
+    $("lgBreak").textContent = fmtDur(r.brk);
+
+    var bar = $("bar");
+    if (r.total > 0) {
+      bar.innerHTML = '<div class="w" style="flex:' + workMin + '"></div>' + (r.brk ? '<div class="b" style="flex:' + r.brk + '"></div>' : "");
+    } else bar.innerHTML = "";
+
+    /* Optional actual check-out comparison */
+    var act = toMin($("actualOut").value);
+    var v = $("verdict");
+    if (act === null) { v.textContent = ""; v.className = "verdict"; return; }
+    if (act <= cin) act += DAY;
+    var worked = act - cin - r.brk;
+    var diff = worked - workMin;
+    if (worked < 0) {
+      v.className = "verdict short";
+      v.textContent = "The break is longer than the time you were in.";
+    } else if (diff >= 0) {
+      v.className = "verdict ok";
+      v.textContent = "Worked " + fmtDur(worked) + (diff ? " (" + fmtDur(diff) + " extra)" : " (target met)");
+    } else {
+      v.className = "verdict short";
+      v.textContent = "Worked " + fmtDur(worked) + " (" + fmtDur(-diff) + " short)";
+    }
+  }
+
+  /* Break time: hours field first, then minutes; each can be edited on its own */
+  function pad2(n) { return String(n).padStart(2, "0"); }
+  function setBreak(total) {
+    $("breakH").value = pad2(Math.min(23, Math.floor(total / 60)));
+    $("breakM").value = pad2(total % 60);
+  }
+  function wireBreakField(id, max, next, prev) {
+    var el = $(id);
+    el.addEventListener("focus", function () { el.select(); });
+    el.addEventListener("click", function () { el.select(); });
+    el.addEventListener("mouseup", function (e) { e.preventDefault(); });
+    el.addEventListener("input", function () {
+      var d = el.value.replace(/\D/g, "").slice(0, 2);
+      /* One digit that cannot start a valid two-digit value (3 for hours, 6 for minutes) becomes 03 / 06 */
+      if (d.length === 1 && parseInt(d, 10) * 10 > max) d = "0" + d;
+      if (d !== "" && parseInt(d, 10) > max) d = String(max);
+      el.value = d;
+      if (d.length === 2 && next) $(next).focus();
+      update();
+    });
+    el.addEventListener("keydown", function (e) {
+      /* Typing a digit into a full field starts the field over instead of being ignored */
+      if (/^\d$/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        var all = el.selectionStart === 0 && el.selectionEnd === el.value.length;
+        if (el.value.length >= 2 && !all) el.value = "";
+      }
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        e.preventDefault();
+        var v = num(el.value) + (e.key === "ArrowUp" ? 1 : -1);
+        el.value = pad2(Math.max(0, Math.min(max, v)));
+        update();
+      } else if (e.key === "Backspace" && el.value === "" && prev) {
+        $(prev).focus();
+      }
+    });
+    el.addEventListener("blur", function () { el.value = pad2(Math.min(max, num(el.value))); update(); });
+  }
+  wireBreakField("breakH", 23, "breakM", null);
+  wireBreakField("breakM", 59, null, "breakH");
+  $("nowBtn").addEventListener("click", function () {
+    var d = new Date();
+    $("checkin").value = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+    update();
+  });
+  ["checkin", "shiftH", "shiftM", "actualOut"].forEach(function (id) {
+    $(id).addEventListener("input", update);
+  });
+
+  load();
+  update();
+})();
+</script>
+
+</body></html>
